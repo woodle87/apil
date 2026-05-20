@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Reaction Test</title>
+<style>
+  body {
+    margin: 0;
+    height: 100vh;
+    background: #0f0f0f;
+    color: white;
+    font-family: Arial;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+  }
+
+  h1 {
+    margin: 0;
+  }
+
+  .lights {
+    display: flex;
+    gap: 15px;
+  }
+
+  .light {
+    width: 40px;
+    height: 100px;
+    background: #222;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+    border: 2px solid #333;
+  }
+
+  .fill {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 0%;
+    background: red;
+    transition: height 0.4s linear;
+  }
+
+  .bottomRow {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+  }
+
+  .bottomLight {
+    width: 40px;
+    height: 100px;
+    border-radius: 10px;
+    border: 2px solid #333;
+    background: #111;
+  }
+
+  .ready {
+    color: lime;
+    font-size: 18px;
+  }
+
+  button {
+    padding: 12px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+
+  #reactBtn {
+    display: none;
+    background: white;
+    color: black;
+  }
+
+  #result {
+    font-size: 20px;
+  }
+</style>
+</head>
+<body>
+
+<h1>Reaction Time Test</h1>
+
+<div class="lights" id="lights"></div>
+<div class="bottomRow" id="bottomRow"></div>
+
+<button onclick="startTest()">Start</button>
+<button id="reactBtn">CLICK!</button>
+
+<div id="result"></div>
+
+<script>
+const lights = document.getElementById("lights");
+const bottomRow = document.getElementById("bottomRow");
+const reactBtn = document.getElementById("reactBtn");
+const result = document.getElementById("result");
+
+let startTime;
+let ready = false;
+
+// build lights
+for (let i = 0; i < 5; i++) {
+  const l = document.createElement("div");
+  l.className = "light";
+  l.innerHTML = `<div class="fill"></div>`;
+  lights.appendChild(l);
+
+  const b = document.createElement("div");
+  b.className = "bottomLight";
+  bottomRow.appendChild(b);
+}
+
+function startTest() {
+  result.innerText = "";
+  ready = false;
+  reactBtn.style.display = "none";
+
+  const fills = document.querySelectorAll(".fill");
+
+  fills.forEach(f => f.style.height = "0%");
+
+  let i = 0;
+
+  const interval = setInterval(() => {
+    fills[i].style.height = "100%";
+    i++;
+
+    if (i === fills.length) {
+      clearInterval(interval);
+      setTimeout(() => {
+        ready = true;
+        result.innerHTML = "<span class='ready'>READY — CLICK NOW</span>";
+        reactBtn.style.display = "inline-block";
+        startTime = performance.now();
+      }, 800);
+    }
+  }, 600);
+}
+
+reactBtn.onclick = () => {
+  if (!ready) return;
+
+  const reaction = performance.now() - startTime;
+  result.innerText = `Reaction time: ${Math.round(reaction)} ms`;
+  ready = false;
+  reactBtn.style.display = "none";
+};
+</script>
+
+</body>
+</html>
